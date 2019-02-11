@@ -1,0 +1,1434 @@
+---
+title: "Marine anammox report"
+author: "Dario Rangel Shaw"
+date: "30 nov 2016"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r message=FALSE, warning=FALSE, results='hide', echo=F}
+library("mmgenome")
+library ("proto")
+library ("ggplot2")
+load("~/Desktop/Comparative metagenomics project/Marine anammox/data.RData")
+options(scipen = 8)
+```
+
+## Results
+
+## Sample overview
+
+### Figure 1: Differential coverage plot (3.2 vs. SI granule)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp). The size of the circles represent the length of the scaffolds, highlighting the two first genome bins that were extracted. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, message=FALSE, warning=FALSE, results='hide', echo=F, fig.align='center', fig.width=7, fig.height=7.5}
+mmplot(data = d, 
+       x = "S3_2", 
+       y = "SI_granule", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage SI granule") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom") +
+  annotate("text", x = 1200, y = 450, label = "Bin 1\nCa. Scalindua") +
+  annotate("text", x = 3.5, y = 200, label = "Bin 2\nDeferribacteres") +
+  #annotate("text", x = 40, y = 300, label = "Bin 2\nIgnavibacterium") +
+  #annotate("text", x = 800, y = 0.03, label = "Bin 3\nFimbriimonadales") +
+  #annotate("text", x = 900, y = 7, label = "Bin 4\nPHOS−HE36") +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 4))
+
+
+ggsave("coverage1.jpg", dpi=600)
+
+```
+
+
+
+
+
+
+### Figure 2: Differential coverage plot of extracted genome bins (3.2 vs. 3.4)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the third genome bin that was extracted. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, message=FALSE, warning=FALSE, results='hide', echo=F, fig.align='center', fig.width=7, fig.height=7.5}
+mmplot(data = d, 
+       x = "S3_2", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.4") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom") +
+  annotate("text", x = 2.2, y = 200, label = "Bin 3\nAlphaproteobacteria") +
+  #annotate("text", x = 800, y = 0.03, label = "Bin 3\nFimbriimonadales") +
+  #annotate("text", x = 900, y = 7, label = "Bin 4\nPHOS−HE36") +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 4))
+```
+
+
+### Figure 3: Differential coverage plot (3.4 vs. 4.6)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp). The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples.
+
+```{r, message=FALSE, warning=FALSE, results='hide', echo=F, fig.align='center', fig.width=7, fig.height=7.5}
+mmplot(data = d, 
+       x = "S3_4", 
+       y = "S4_6", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(0.1, 2000), breaks = c(0.1,1,10,100,1000), name = "Coverage 3.4") + 
+  scale_y_log10(limits = c(0.01, 500), breaks = c(0.1, 1,10,100,1000), name = "Coverage 4.6") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom") +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 4))
+```
+
+
+
+### Table 1: Basic metagenome stats
+
+Basic stats of the metagenome libraries and assembly. **Number of scaffolds (#)** is the number of scaffolds in the combined metagenome assembly (all four samples). **Mean GC content (%)** is the mean GC content of all scaffolds in the assembly weigthed by scaffold length. **N50 (bp)** is a median statistic that indicates that 50% of the entire assembly is contained in scaffolds equal to or larger than this value (bp).**Length Total (Mbp)** is the total combined length of the metagenome assembly in Mbp. **Length Maximum (bp)** is the length of the largest scaffold in the assembly. **Length mean** is the mean length of scaffolds in the assembly. **Dataset size** is the size of the each individual metagenome library after quality trimming and mapping to the metagenome assembly. 
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(d, ncov = 6) 
+
+stats[4,1] <- stats[4,1] / 1000000 
+stats[7,1] <- stats[7,1] * stats[4,1] / 1000
+stats[8,1] <- stats[8,1] * stats[4,1] / 1000
+stats[9,1] <- stats[9,1] * stats[4,1] / 1000
+stats[10,1] <- stats[10,1] * stats[4,1] / 1000
+stats[11,1] <- stats[11,1] * stats[4,1] / 1000
+stats[12,1] <- stats[12,1] * stats[4,1] / 1000
+
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (Mbp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Dataset size SI granule (Gbp)",
+                           "Dataset size 3.2 (Gbp)",
+                           "Dataset size 3.4 (Gbp)",
+                           "Dataset size 3.6 (Gbp)",
+                           "Dataset size 3.6 RE (Gbp)",                           
+                           "Dataset size 4.6 (Gbp)",                           
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 1))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2[1:12,], rows= NULL, theme = tt2)
+```
+
+
+## Bin 1: Candidatus Scalindua
+
+### Figure 4: Initial genome extraction (bin 1)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 1**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "SI_granule", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage SI granule") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(700, 1200, 1200, 700),
+                  SI_granule  =  c(850, 850, 1200, 1200))
+mmplot_selection(p, sel) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 4))
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+```
+
+
+
+### Figure 5: Using paired-end network to extract repeats (bin 1)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also been missed. Here we generate a network plot of scaffolds connected by paired-end reads and use it to extract scaffolds connected to our genome bin of interest.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 5, type = "direct")
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dB, network = pe, nconnections = 1, color = "essential") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(legend.position = "bottom")
+```
+
+
+
+### Table 2: Genome bin statistics (bin1)
+
+Basic stats of the extracted genome bin. **Number of scaffolds (#)** is the number of scaffolds in the extracted genome bin. **Mean GC content (%)** is the mean GC content of all scaffolds in the bin weigthed by scaffold length. **N50 (bp)** is a median statistic that indicates that 50% of the entire assembly is contained in scaffolds equal to or larger than this value (bp).**Length Total (bp)** is the total combined length of extracted genome bin. **Length Maximum (bp)** is the length of the largest scaffold in the extracted genome bin. **Length mean** is the mean length of scaffolds in the extracted genome bin. **Coverage (fold)** is the average coverage for all scaffolds in the bin weighted by their length. **Total essential genes (#)** is the total number of identified essential "single copy" genes in the genome bin, **Unique essential genes (#)** is the number of unique essential "single copy" genes. The list of essential "single copy" genes we look for contain 108 genes in total. If the total number of genes is much higher than the number of unique genes, it is likely that the bin contains scaffolds from more than one organism.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+
+stats <- mmstats(dB, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data = dB, assembly = assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_Bin1_CaScalindua.fa")
+```
+
+
+
+## Bin 2: Deferribacteres
+
+### Figure 6: Initial genome extraction (bin 2)
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 2**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "SI_granule", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage SI granule") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(2, 6, 6, 2),
+                  SI_granule  =  c(50, 50, 150, 150))
+mmplot_selection(p, sel) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 4))
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+```
+
+
+### Figure 7: Using paired-end network to extract repeats (bin 2)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also been missed. Here we generate a network plot of scaffolds connected by paired-end reads and use it to extract scaffolds connected to our genome bin of interest.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 5, type = "direct")
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dB, network = pe, nconnections = 1, color = "essential") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(legend.position = "bottom")
+```
+
+
+### Table 3: Genome bin statistics (bin2)
+
+Basic stats of the extracted genome bin. **Number of scaffolds (#)** is the number of scaffolds in the extracted genome bin. **Mean GC content (%)** is the mean GC content of all scaffolds in the bin weigthed by scaffold length. **N50 (bp)** is a median statistic that indicates that 50% of the entire assembly is contained in scaffolds equal to or larger than this value (bp).**Length Total (bp)** is the total combined length of extracted genome bin. **Length Maximum (bp)** is the length of the largest scaffold in the extracted genome bin. **Length mean** is the mean length of scaffolds in the extracted genome bin. **Coverage (fold)** is the average coverage for all scaffolds in the bin weighted by their length. **Total essential genes (#)** is the total number of identified essential "single copy" genes in the genome bin, **Unique essential genes (#)** is the number of unique essential "single copy" genes. The list of essential "single copy" genes we look for contain 108 genes in total. If the total number of genes is much higher than the number of unique genes, it is likely that the bin contains scaffolds from more than one organism.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dB, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data = dB, assembly = assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_Bin2_Deferribacteres.fa")
+```
+
+
+## Bin 3: Alphaproteobacteria
+
+### Figure 8: Initial genome extraction (bin 3)
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 3**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.4") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(1.5, 3, 3, 1.5),
+                  S3_4  =  c(60, 60, 130, 130))
+mmplot_selection(p, sel) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 4))
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+```
+
+
+### Table 4: Genome bin statistics (bin3)
+
+Basic stats of the extracted genome bin. **Number of scaffolds (#)** is the number of scaffolds in the extracted genome bin. **Mean GC content (%)** is the mean GC content of all scaffolds in the bin weigthed by scaffold length. **N50 (bp)** is a median statistic that indicates that 50% of the entire assembly is contained in scaffolds equal to or larger than this value (bp).**Length Total (bp)** is the total combined length of extracted genome bin. **Length Maximum (bp)** is the length of the largest scaffold in the extracted genome bin. **Length mean** is the mean length of scaffolds in the extracted genome bin. **Coverage (fold)** is the average coverage for all scaffolds in the bin weighted by their length. **Total essential genes (#)** is the total number of identified essential "single copy" genes in the genome bin, **Unique essential genes (#)** is the number of unique essential "single copy" genes. The list of essential "single copy" genes we look for contain 108 genes in total. If the total number of genes is much higher than the number of unique genes, it is likely that the bin contains scaffolds from more than one organism.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dA, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data = dA, assembly = assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_Bin3.fa")
+```
+
+
+
+## Bin 4: Phycisphaera
+
+### Figure 9: Initial genome extraction (bin 4)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 4**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage 3.4") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(50, 120, 175, 50),
+                  S3_4  =  c(15, 20, 45, 25))
+mmplot_selection(p, sel) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 4))
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+```
+
+
+### Table 5: Genome bin statistics (bin4)
+
+Basic stats of the extracted genome bin. **Number of scaffolds (#)** is the number of scaffolds in the extracted genome bin. **Mean GC content (%)** is the mean GC content of all scaffolds in the bin weigthed by scaffold length. **N50 (bp)** is a median statistic that indicates that 50% of the entire assembly is contained in scaffolds equal to or larger than this value (bp).**Length Total (bp)** is the total combined length of extracted genome bin. **Length Maximum (bp)** is the length of the largest scaffold in the extracted genome bin. **Length mean** is the mean length of scaffolds in the extracted genome bin. **Coverage (fold)** is the average coverage for all scaffolds in the bin weighted by their length. **Total essential genes (#)** is the total number of identified essential "single copy" genes in the genome bin, **Unique essential genes (#)** is the number of unique essential "single copy" genes. The list of essential "single copy" genes we look for contain 108 genes in total. If the total number of genes is much higher than the number of unique genes, it is likely that the bin contains scaffolds from more than one organism.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dA, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data = dA, assembly = assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_Phycisphaera_bin4.fa")
+```
+
+
+## Bin 5: Chloroflexi
+
+### Figure 10: Initial genome extraction (bin 5)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 5**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(8, 100), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 10), name = "Coverage 3.4") +
+  scale_size_area(max_size = 20, name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "right")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(23.5, 31.2, 29.4, 19.4, 15.4, 16.6),
+                  S3_4  =  c(3.18, 2.86, 2.21, 1.86, 2.14, 2.91))
+
+mmplot_selection(p, sel) 
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+
+```
+
+### Table 6: Genome bin statistics (bin5)
+
+Basic stats of the extracted genome bin. **Number of scaffolds (#)** is the number of scaffolds in the extracted genome bin. **Mean GC content (%)** is the mean GC content of all scaffolds in the bin weigthed by scaffold length. **N50 (bp)** is a median statistic that indicates that 50% of the entire assembly is contained in scaffolds equal to or larger than this value (bp).**Length Total (bp)** is the total combined length of extracted genome bin. **Length Maximum (bp)** is the length of the largest scaffold in the extracted genome bin. **Length mean** is the mean length of scaffolds in the extracted genome bin. **Coverage (fold)** is the average coverage for all scaffolds in the bin weighted by their length. **Total essential genes (#)** is the total number of identified essential "single copy" genes in the genome bin, **Unique essential genes (#)** is the number of unique essential "single copy" genes. If the total number of genes is much higher than the number of unique genes, it is likely that the bin contains scaffolds from more than one organism.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dA, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+### Figure 11: Using paired-end network to extract repeats (bin 5)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also been missed. Here we generate a network plot of scaffolds connected by paired-end reads and use it to extract scaffolds connected to our genome bin of interest.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 5, type = "direct")
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dB, network = pe, nconnections = 1, color = "essential")+
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(legend.position = "bottom")
+```
+
+
+### Figure 12: Finding the relevant data for next subset
+
+There are contaminating scaffolds in the bin, hence we look if they can be seperated using another combination of datasets.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+
+#mplot pairs
+mmplot_pairs(data = dB, 
+             variables = c("SI_granule","S3_2", "S3_4","S4_6","gc", "PC1", "PC2", "PC3"), 
+             log = c("SI_granule","S3_2", "S3_4","S4_6"), 
+             minlength = 5000,
+             textsize = 3,
+             color = "essential")
+```
+
+
+### Figure 13: Plot subspace extraction 2
+
+We choose PC1 and gc to clean Up the subspace
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+
+p <- mmplot(data = dB,
+            x = "PC1", 
+            y = "gc", 
+            color = "essential", 
+            minlength = 1000)
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(PC1  =  c(0.0138, 0.0167, -0.0119, -0.0683, -0.0832, -0.0363),
+                  gc  =  c(54.1, 51.3, 49.2, 48.7, 51, 53.9))
+
+mmplot_selection(p, sel)
+
+```
+
+The scaffolds included in the defined subspace are extracted using the mmextract function.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dC <- mmextract(dB, sel)
+```
+
+### Table 7: Genome bin statistics (bin5)
+
+Basic stats of the extracted genome bin. **Number of scaffolds (#)** is the number of scaffolds in the extracted genome bin. **Mean GC content (%)** is the mean GC content of all scaffolds in the bin weigthed by scaffold length. **N50 (bp)** is a median statistic that indicates that 50% of the entire assembly is contained in scaffolds equal to or larger than this value (bp).**Length Total (bp)** is the total combined length of extracted genome bin. **Length Maximum (bp)** is the length of the largest scaffold in the extracted genome bin. **Length mean** is the mean length of scaffolds in the extracted genome bin. **Coverage (fold)** is the average coverage for all scaffolds in the bin weighted by their length. **Total essential genes (#)** is the total number of identified essential "single copy" genes in the genome bin, **Unique essential genes (#)** is the number of unique essential "single copy" genes. If the total number of genes is much higher than the number of unique genes, it is likely that the bin contains scaffolds from more than one organism.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dC, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data=dC, assembly=assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_Chloroflexi_bin5.fa")
+```
+
+
+### Bin 6: Bacteroidetes
+
+### Figure 14: Initial genome extraction (bin 6)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 6**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(8, 100), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 10), name = "Coverage 3.4") +
+  scale_size_area(max_size = 20, name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "right")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(13.2, 14.2, 13.3, 10.9, 8.98, 8.38, 9.57),
+                  S3_4  =  c(1.81, 1.61, 1.34, 1.06, 1.05, 1.31, 1.73))
+
+
+mmplot_selection(p, sel) 
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+
+```
+
+### Table 8. Statistics of the subspace extraction
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dA, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+
+### Figure 15: Using paired-end network to extract repeats (bin 6)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also been missed. Here we generate a network plot of scaffolds connected by paired-end reads and use it to extract scaffolds connected to our genome bin of interest.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 5, type = "direct")
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dB, network = pe, nconnections = 1, color = "essential")+
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(legend.position = "bottom")
+```
+
+
+### Table 8: Genome bin statistics (bin6)
+
+Basic stats of the extracted genome bin. **Number of scaffolds (#)** is the number of scaffolds in the extracted genome bin. **Mean GC content (%)** is the mean GC content of all scaffolds in the bin weigthed by scaffold length. **N50 (bp)** is a median statistic that indicates that 50% of the entire assembly is contained in scaffolds equal to or larger than this value (bp).**Length Total (bp)** is the total combined length of extracted genome bin. **Length Maximum (bp)** is the length of the largest scaffold in the extracted genome bin. **Length mean** is the mean length of scaffolds in the extracted genome bin. **Coverage (fold)** is the average coverage for all scaffolds in the bin weighted by their length. **Total essential genes (#)** is the total number of identified essential "single copy" genes in the genome bin, **Unique essential genes (#)** is the number of unique essential "single copy" genes. If the total number of genes is much higher than the number of unique genes, it is likely that the bin contains scaffolds from more than one organism.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dB, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data=dB, assembly=assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_BActeroidetes_bin6.fa")
+```
+
+
+## Bin 7: Gammaproteobacteria
+
+### Figure 16: Initial genome extraction (bin 7)
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 7**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 8), name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 80), name = "Coverage 3.4") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "right")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(2.41, 2.31, 1.97, 1.57, 1.61, 1.94),
+                  S3_4  =  c(14.3, 10.6, 9.05, 9.9, 13.3, 15.4))
+
+
+mmplot_selection(p, sel)  
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+```
+
+### Table 9. Statistics of the subspace extraction
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dA, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+### Figure 17: Using paired-end network to extract repeats (bin 7)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also been missed. Here we generate a network plot of scaffolds connected by paired-end reads and use it to extract scaffolds connected to our genome bin of interest.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 5, type = "direct")
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dB, network = pe, nconnections = 1, color = "essential")+
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(legend.position = "bottom")
+```
+
+There are contaminating scaffolds in the bin, hence we look if they can be seperated using another combination of datasets.
+
+### Figure 18: Finding the relevant data for next subset
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+#mplot pairs
+mmplot_pairs(data = dB, 
+             variables = c("SI_granule","S3_2", "S3_4","S4_6","gc", "PC1", "PC2", "PC3"), 
+             log = c("SI_granule","S3_2", "S3_4","S4_6"), 
+             minlength = 5000,
+             textsize = 3,
+             color = "essential")
+```
+
+
+### Figure 19: Plot subspace extraction 2
+
+We choose Sample 4_6 and gc to make the extraction
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+
+p <- mmplot(data = dB,
+            x = "gc", 
+            y = "S4_6", 
+            color = "essential", 
+            minlength = 1000)
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame( gc  =  c(40, 42, 41.5, 38.3, 35.9, 35.4, 37.1),
+                  S4_6  =  c(1.03, 0.361, -0.228, -0.507, -0.377, 0.425, 0.96))
+
+                  
+mmplot_selection(p, sel)
+```
+
+
+The scaffolds included in the defined subspace are extracted using the mmextract function.
+
+```{r}
+dC <- mmextract(dB, sel)
+```
+
+
+### Table 10: Statistics of the subspace 2
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dC, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+
+### Figure 20 and 21: sing paried-end connections (Subset D)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also be missed.The function mmplot_network can be used to generate a network plot of scaffolds connected by paired-end reads. We start by plotting the scaffolds we have in our current subset.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dC, network = pe, nconnections = 1, color = "essential", scale.links = 0.5)
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dD <- mmextract_network(subset = dC, original = d, network = pe, nconnections = 1, type = "direct")
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dD, network = pe, nconnections = 1, color = "essential", scale.links = 0.5)
+```
+
+### Table 11: Statistics of the final subset
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dD, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data=dD, assembly=assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_Bin7_Gammaproteobacteria.fa")
+```
+
+
+## Bin 8: Bacteroidetes 2
+
+### Figure 22: Initial genome extraction (bin 8)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 8**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 6), breaks = c(1,2,3,6),  name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 80), name = "Coverage 3.4") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "right")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(1.93, 2.05, 2.4, 2.76, 2.82, 2.46, 2.11),
+                  S3_4  =  c(18.6, 23.7, 27, 22.9, 18.3, 15.2, 15.1))
+
+
+mmplot_selection(p, sel)  
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+```
+
+### Table 12: Statistics of the extraction
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dA, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+### Figure 23: Using paired-end network to extract repeats (bin 8)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also been missed. Here we generate a network plot of scaffolds connected by paired-end reads and use it to extract scaffolds connected to our genome bin of interest.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 5, type = "direct")
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dB, network = pe, nconnections = 1, color = "essential")+
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(legend.position = "bottom")
+```
+
+### Table 13: Statistics of the subspace
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dB, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+
+### Figure 24: Finding the relevant data for next subset
+
+There are contaminating scaffolds in the bin, hence we look if they can be seperated using another combination of datasets.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+
+#mplot pairs
+
+mmplot_pairs(data = dB, 
+             variables = c("SI_granule","S3_2", "S3_4","S4_6","gc", "PC1", "PC2", "PC3"), 
+             log = c("SI_granule","S3_2", "S3_4","S4_6"), 
+             minlength = 5000,
+             textsize = 3,
+             color = "essential")
+```
+
+
+### Figure 25: Plot subspace extraction 2
+
+We choose Sample 4_6 and gc to make the extraction
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+
+p <- mmplot(data = dB,
+            x = "gc", 
+            y = "S4_6", 
+            color = "essential", 
+            minlength = 1000)
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame( gc  =  c(35.3, 37.7, 37.8, 37, 31.4, 30.8, 32.4),
+                  S4_6  =  c(3.23, 2.04, -0.467, -1.54, -1.54, 0.482, 2.84))
+         
+mmplot_selection(p, sel)
+
+```
+
+The scaffolds included in the defined subspace are extracted using the mmextract function.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dC <- mmextract(dB, sel)
+```
+
+### Table 14: Statistics of the subspace
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dC, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+### Figure 26: Using paried-end connections (Subset D)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also be missed.The function mmplot_network can be used to generate a network plot of scaffolds connected by paired-end reads. We start by plotting the scaffolds we have in our current subset.
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dC, network = pe, nconnections = 1, color = "essential", scale.links = 0.5)
+dD <- mmextract_network(subset = dC, original = d, network = pe, nconnections = 1, type = "direct")
+mmplot_network(data = dD, network = pe, nconnections = 1, color = "essential", scale.links = 0.5)
+
+```
+
+### Table 15: Statistics of the final subset
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dD, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data=dD, assembly=assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_Bin8_Bacteroidetes2.fa")
+```
+
+
+## Bin 9: Firmicutes
+
+### Figure 27: Initial genome extraction (bin 9)
+
+Differential coverage plot of the assembled metagenomic scaffolds (>5000 bp), highlighting the initial extraction of scaffolds for **Bin 9**. The size of the circles represent the length of the scaffolds. Colours of the circles represent phylum level taxonomic classification, based on the essential genes identified on the scaffolds, scaffolds with no colour  either contains no essential genes or could not be assigned a phylum level classification. The x and y-axes show the sequencing coverage in the samples (log-scaled).
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7.5}
+p <- mmplot(data = d, 
+       x = "S3_2", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 3),  name = "Coverage 3.2") + 
+  scale_y_log10(limits = c(1, 10), name = "Coverage 3.4") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "right")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(S3_2  =  c(2.64, 2.68, 2.52, 2.33, 2.41),
+                  S3_4  =  c(3.52, 3.02, 2.72, 3.08, 3.4))
+
+
+mmplot_selection(p, sel)  
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dA <- mmextract(d, sel)
+```
+
+### Table 16: Statistics of the extraction
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dA, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+```
+
+### Figure 27: Using paired-end network to extract repeats (bin 9)
+
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also been missed. Here we generate a network plot of scaffolds connected by paired-end reads and use it to extract scaffolds connected to our genome bin of interest.
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 5, type = "direct")
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+mmplot_network(data = dB, network = pe, nconnections = 1, color = "essential")+
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(legend.position = "bottom")
+```
+
+### Table 17: Statistics of final the subspace
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.height=5}
+stats <- mmstats(dB, ncov = 6) 
+stats2 <- data.frame(A = c("Number of scaffolds (#)", 
+                           "Mean GC content (%)",
+                           "N50 (bp)",
+                           "Length Total (bp)",
+                           "Length Maximum (bp)",
+                           "Length Mean (bp)",
+                           "Coverage SI granule (fold)",
+                           "Coverage 3.2 (fold)",
+                           "Coverage 3.4 (fold)",
+                           "Coverage 3.6 (fold)",
+                           "Coverage 3.6 RE (fold)",
+                           "Coverage 4.6 (fold)",
+                           "Total essential genes (#)",
+                           "Unique essential genes (#)"), 
+                     B = stats)
+colnames(stats2) <- c("General Stats", "Value")
+
+stats2 <- mutate(stats2, Value = round(Value, 0))
+
+tt2 <- ttheme_default(core=list(fg_params=list(hjust=1, x = 0.95, fontsize = 10)),
+                      colhead=list(fg_params=list(fontsize = 12)))
+
+grid.table(stats2, rows= NULL, theme = tt2)
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo = F}
+mmexport(data=dB, assembly=assembly, file = "~/Desktop/Comparative metagenomics project/Marine anammox/Extracted genomes/CP115_Bin9_Firmicutes.fa")
+```
+
+
+Final plot of differential coverage
+
+```{r, warning=FALSE, message=FALSE, echo = F, fig.align='center', fig.width=7, fig.height=7}
+
+#mplot pairs
+ mmplot_pairs(data = d, 
+             variables = c("SI_granule","S3_2", "S3_4","S4_6"), 
+             log = c("SI_granule","S3_2", "S3_4","S4_6"), 
+             minlength = 5000,
+             textsize = 3,
+             color = "essential") 
+
+```
+
+Plot T0/T2
+
+```{r, message=FALSE, warning=FALSE, results='hide', echo=F, fig.align='center', fig.width=7, fig.height=7.5}
+mmplot(data = d, 
+       x = "S3_2", 
+       y = "SI_granule", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 2") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 0") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")  +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 5))
+
+ggsave("coverage02.jpg", dpi=600)
+
+```
+
+Plot T0/T4
+
+```{r, message=FALSE, warning=FALSE, results='hide', echo=F, fig.align='center', fig.width=7, fig.height=7.5}
+mmplot(data = d, 
+       x = "S3_4", 
+       y = "SI_granule", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 4") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 0") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")  +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 5))
+
+ggsave("coverage04.jpg", dpi=600)
+
+```
+
+Plot T0/T6
+
+```{r, message=FALSE, warning=FALSE, results='hide', echo=F, fig.align='center', fig.width=7, fig.height=7.5}
+mmplot(data = d, 
+       x = "S4_6", 
+       y = "SI_granule", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 6") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 0") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")  +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 5))
+
+ggsave("coverage06.jpg", dpi=600)
+
+```
+
+
+Plot T2/T6
+
+```{r, message=FALSE, warning=FALSE, results='hide', echo=F, fig.align='center', fig.width=7, fig.height=7.5}
+mmplot(data = d, 
+       x = "S4_6", 
+       y = "S3_2", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 6") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 2") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")  +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 5))
+
+ggsave("coverage26.jpg", dpi=600)
+
+```
+
+Plot T4/T6
+
+```{r, message=FALSE, warning=FALSE, results='hide', echo=F, fig.align='center', fig.width=7, fig.height=7.5}
+mmplot(data = d, 
+       x = "S4_6", 
+       y = "S3_4", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential", 
+       minlength = 5000) +
+  scale_x_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 6") + 
+  scale_y_log10(limits = c(1, 2500), breaks = c(1,10,100,1000), name = "Coverage month 4") +
+  scale_size_area(max_size = 20, breaks = c(10000, 50000, 100000, 250000, 500000), name = "Scaffold Length") +
+  scale_color_discrete(name = "Taxonomic Classification") +
+  theme(axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        legend.position = "bottom")  +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19), nrow = 5))
+
+ggsave("coverage46.jpg", dpi=600)
+
+```
+
+
+
+
+
